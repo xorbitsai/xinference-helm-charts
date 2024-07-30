@@ -54,7 +54,7 @@ jobs:
           cd ../..
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.6.0
+        uses: fhofherr/chart-releaser-action@171-unbound-variable-latest_tag
         with:
           skip_packaging: "yes"
         env:
