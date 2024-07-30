@@ -50,11 +50,12 @@ jobs:
         shell: bash
         run: |
           cd charts/xinference
-          helm package ./ --app-version $XINFERENCE_APP_VERSION --version 1.0
+          helm package ./ --app-version $XINFERENCE_APP_VERSION
           cd ../..
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@main
+        with:
+          skip_packaging: "yes"
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          skip_packaging: true
