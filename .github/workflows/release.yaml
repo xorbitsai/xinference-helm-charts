@@ -50,7 +50,7 @@ jobs:
         shell: bash
         run: |
           cd charts/xinference
-          helm package ./ --app-version $XINFERENCE_APP_VERSION
+          helm package ./ --app-version $XINFERENCE_APP_VERSION --destination .cr-release-packages
           cd ../..
 
       - name: Run chart-releaser
