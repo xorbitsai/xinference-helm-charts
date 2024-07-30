@@ -54,7 +54,7 @@ jobs:
           cd ../..
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@main
+        uses: helm/chart-releaser-action@v1.6.0
         with:
           skip_packaging: "yes"
         env:
