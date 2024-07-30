@@ -1,0 +1,112 @@
+common:
+  # backup: registry.cn-hangzhou.aliyuncs.com/xprobe_xinference/xinference:latest
+  xinference_image: xprobe/xinference:latest
+  # backup: registry.cn-hangzhou.aliyuncs.com/xprobe_xinference/curl:8.8.0
+  curl_image: &curl_image "curlimages/curl:8.8.0"
+pv:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    # actually no limit for local-storage.
+    # if you want to change this, your storage class should support `resize`
+    storage: 20Gi
+  hostPath:
+    path: /tmp/xinference
+  persistentVolumeReclaimPolicy: Delete
+pvc:
+  name: xinference-shared-volume-claim
+  accessModes:
+    # the volume can be mounted as read-write by many nodes.
+    - ReadWriteMany
+  sharedVolumeClaim:
+    storageRequest: 10Gi
+serviceWeb:
+  ports:
+  - nodePort: 30003
+    port: 9997
+    protocol: TCP
+    targetPort: 9997
+  # change this to `LoadBalancer` if you use cloud platform
+  type: NodePort
+serviceSupervisor:
+  ports:
+  - name: service-supervisor-oscar
+    port: 9999
+    protocol: TCP
+    targetPort: 9999
+  - name: service-supervisor-web
+    port: 9997
+    protocol: TCP
+    targetPort: 9997
+  type: ClusterIP
+serviceWorker:
+  ports:
+  - port: 30001
+    protocol: TCP
+    targetPort: 30001
+  type: ClusterIP
+xinferenceSupervisor:
+  volumes:
+    - name: xinference-home
+      persistentVolumeClaim:
+        claimName: xinference-shared-volume-claim
+  supervisor:
+    args:
+    - --port
+    - "9997"
+    - --host
+    - $(POD_IP)
+    - --supervisor-port
+    - "9999"
+    - --log-level
+    - debug
+    ports:
+      - containerPort: 9997
+        name: web
+      - containerPort: 9999
+        name: oscar
+    volumeMounts:
+      - mountPath: /data
+        name: xinference-home
+    resources:
+      requests:
+        cpu: "1"
+        memory: 4Gi
+xinferenceWorker:
+  replicas: 1
+  strategy:
+    type: Recreate
+  volumes:
+    - name: xinference-home
+      persistentVolumeClaim:
+        claimName: xinference-shared-volume-claim
+  worker:
+    initContainers:
+    - name: check-supervisor
+      image: *curl_image
+      command: [ 'sh', '-c', "until curl -v http://service-supervisor:9997/v1/address; do echo waiting for supervisor; sleep 1; done" ]
+    args:
+    - -e
+    - http://service-supervisor:9997
+    - --host
+    - $(POD_IP)
+    - --worker-port
+    - "30001"
+    - --log-level
+    - debug
+    env:
+      xinferenceHome: /data
+      xinferenceModelSrc: modelscope
+    ports:
+      - containerPort: 30001
+    volumeMounts:
+      - mountPath: /data
+        name: xinference-home
+    resources:
+      # if you use cpu image without GPU supports, remove this
+      # if a worker needs to see all GPUs, also remove this
+#      limits:
+#        nvidia.com/gpu: "2"
+      requests:
+        cpu: "2"
+        memory: 8Gi

@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: xinference-shared-volume
+  labels:
+    pv: xinference-pv
+  {{- include "charts.labels" . | nindent 4 }}
+spec: {{- toYaml .Values.pv | nindent 2 }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pvc.name | quote }}
+  labels:
+  {{- include "charts.labels" . | nindent 4 }}
+spec:
+  accessModes: {{- toYaml .Values.pvc.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.sharedVolumeClaim.storageRequest | quote }}
+  selector:
+    matchLabels:
+      pv: xinference-pv
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "charts.fullname" . }}-worker
+  labels:
+  {{- include "charts.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.xinferenceWorker.replicas }}
+  selector:
+    matchLabels:
+      app: xinference-worker
+    {{- include "charts.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: {{ .Values.xinferenceWorker.strategy.type }}
+  template:
+    metadata:
+      labels:
+        app: xinference-worker
+      {{- include "charts.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers: {{- toYaml .Values.xinferenceWorker.worker.initContainers | nindent 8 }}
+      containers:
+      - args: {{- toYaml .Values.xinferenceWorker.worker.args | nindent 8 }}
+        command:
+        - xinference-worker
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: XINFERENCE_MODEL_SRC
+          value: {{ quote .Values.xinferenceWorker.worker.env.xinferenceModelSrc }}
+        - name: XINFERENCE_HOME
+          value: {{ quote .Values.xinferenceWorker.worker.env.xinferenceHome }}
+        - name: XINFERENCE_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        image: {{ .Values.common.xinference_image | quote }}
+        name: worker
+        ports: {{- toYaml .Values.xinferenceWorker.worker.ports | nindent 10 }}
+        resources: {{- toYaml .Values.xinferenceWorker.worker.resources | nindent 10 }}
+        volumeMounts: {{- toYaml .Values.xinferenceWorker.worker.volumeMounts | nindent 10 }}
+      volumes: {{- toYaml .Values.xinferenceWorker.volumes | nindent 8 }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-worker
+  labels:
+  {{- include "charts.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.serviceWorker.type }}
+  selector:
+    app: xinference-worker
+  {{- include "charts.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.serviceWorker.ports | toYaml | nindent 2 }}
