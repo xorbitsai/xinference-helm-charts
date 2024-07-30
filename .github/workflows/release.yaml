@@ -39,7 +39,7 @@ jobs:
           fi
           
           echo "Will handle branch/tag $APP_VERSION"
-          echo "=${APP_VERSION}" >> $GITHUB_ENV
+          echo "XINFERENCE_APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
 
       - name: Install Helm
         uses: azure/setup-helm@v4
