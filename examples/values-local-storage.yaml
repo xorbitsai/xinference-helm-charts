@@ -12,7 +12,7 @@
 
 # common used configurations
 config:
-  xinference_image: xprobe/xinference:latest
+  xinference_image: ""
   curl_image: curlimages/curl:8.8.0
   image_pull_policy: ""
   worker_num: 2
