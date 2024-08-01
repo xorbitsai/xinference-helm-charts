@@ -1,10 +1,19 @@
+###############################################################################################
+#
+# This example demonstrates how to set up a truly distributed Xinference cluster in Kubernetes.
+# In this scenario, there are 4 workers, each requiring 8 GPUs.
+# To achieve this effect, the main changes were made to
+# the `config.worker_num` and `config.gpu_per_worker` parameters.
+#
+###############################################################################################
+
 # common used configurations
 config:
   xinference_image: xprobe/xinference:latest
   curl_image: curlimages/curl:8.8.0
   image_pull_policy: ""
-  worker_num: 1
-  gpu_per_worker: ""
+  worker_num: 4
+  gpu_per_worker: "8"
   model_src: "huggingface"
   persistence:
     enabled: false

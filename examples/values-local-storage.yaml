@@ -1,13 +1,25 @@
+######################################################################################
+#
+# This example demonstrates how to enable shared storage for Xinference in Kubernetes.
+# In this scenario, there are 2 workers, each requiring 2 GPUs.
+# Shared storage has its advantages:
+# 1. downloaded model files can be permanently saved.
+# 2. the cache is shared, eliminating the need for repeated downloads.
+# The example is configured with local storage by enabling the `config.persistence.enabled` config.
+# If you need to use your own storage, please modify the corresponding `storageClass` config, referring to https://kubernetes.io/docs/concepts/storage/storage-classes.
+#
+######################################################################################
+
 # common used configurations
 config:
   xinference_image: xprobe/xinference:latest
   curl_image: curlimages/curl:8.8.0
   image_pull_policy: ""
-  worker_num: 1
-  gpu_per_worker: ""
+  worker_num: 2
+  gpu_per_worker: "2"
   model_src: "huggingface"
   persistence:
-    enabled: false
+    enabled: true
     mountPath: "/data"
   # any other environments
   extra_envs: {}

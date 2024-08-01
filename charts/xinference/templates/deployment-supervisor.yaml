@@ -1,3 +1,44 @@
+{{- if .Values.config.persistence.enabled }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.storageClass.name | quote }}
+{{- toYaml .Values.storageClass.spec | nindent 0 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: xinference-shared-volume
+  labels:
+    pv: xinference-pv
+  {{- include "charts.labels" . | nindent 4 }}
+spec: {{- toYaml .Values.pv | nindent 2 }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: xinference-shared-volume-claim
+  labels:
+  {{- include "charts.labels" . | nindent 4 }}
+spec:
+  accessModes: {{- toYaml .Values.pvc.accessModes | nindent 4 }}
+{{- if .Values.pvc.storageClassName }}
+  storageClassName: {{ .Values.pvc.storageClassName }}
+{{- end }}
+{{- if .Values.pvc.volumeMode }}
+  volumeMode: {{ .Values.pvc.volumeMode }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.sharedVolumeClaim.storageRequest | quote }}
+  selector:
+    matchLabels:
+      pv: xinference-pv
+{{- end }}
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,12 +70,31 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        image: {{ .Values.common.xinference_image | quote }}
+{{- if .Values.config.persistence.enabled }}
+        - name: XINFERENCE_HOME
+          value: {{ .Values.config.persistence.mountPath }}
+{{- end }}
+{{- range $key, $value := .Values.config.extra_envs }}
+        - name: {{ $key }}
+          value: {{ $value }}
+{{- end }}
+        image: {{ .Values.config.xinference_image | quote }}
+{{- if .Values.config.image_pull_policy }}
+        imagePullPolicy: {{ .Values.config.image_pull_policy }}
+{{- end }}
         name: supervisor
         ports: {{- toYaml .Values.xinferenceSupervisor.supervisor.ports | nindent 10 }}
         resources: {{- toYaml .Values.xinferenceSupervisor.supervisor.resources | nindent 10 }}
-        volumeMounts: {{- toYaml .Values.xinferenceSupervisor.supervisor.volumeMounts | nindent 10 }}
-      volumes: {{- toYaml .Values.xinferenceSupervisor.volumes | nindent 8 }}
+{{- if .Values.config.persistence.enabled }}
+        volumeMounts:
+          - mountPath: {{ .Values.config.persistence.mountPath }}
+            name: xinference-home
+      volumes:
+        - name: xinference-home
+          persistentVolumeClaim:
+            claimName: xinference-shared-volume-claim
+{{- end }}
+
 ---
 apiVersion: v1
 kind: Service

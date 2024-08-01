@@ -60,3 +60,31 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+  ConvertIntToString takes an integer and converts it to a string.
+  It returns the string representation of the integer.
+*/}}
+{{- define "charts.intToString" -}}
+{{- $value := . -}}
+{{- if eq (printf "%T" $value) "int" -}}
+{{- printf "%d" $value -}}
+{{- else -}}
+{{- $value -}}
+{{- end -}}
+{{- end -}}
+
+
+{{/*
+  ConvertStringToInt takes a string and converts it to an integer.
+  If the conversion fails, it returns -1.
+*/}}
+{{- define "charts.stringToInt" -}}
+{{- $value := . -}}
+{{- $result := $value -}}
+{{- if and (eq (printf "%T" $value) "string") (ne $value "") -}}
+  {{- $result = (int (printf "%d" $value)) -}}
+{{- end -}}
+{{- $result -}}
+{{- end -}}
