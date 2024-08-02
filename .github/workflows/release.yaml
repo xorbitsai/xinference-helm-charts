@@ -33,12 +33,19 @@ jobs:
           fi
           
           if [[ -n "$GIT_TAG" ]]; then
-            APP_VERSION="$GIT_TAG"
+            VERSION="$GIT_TAG"
           else
-            APP_VERSION=$(git rev-parse --abbrev-ref HEAD)
+            VERSION=$(git rev-parse --abbrev-ref HEAD)
           fi
           
-          echo "Will handle branch/tag $APP_VERSION"
+          echo "Will handle branch/tag $VERSION"
+          
+          HELM_VERSION=$(echo "$VERSION" | cut -d'-' -f1)
+          APP_VERSION=$(echo "$VERSION" | cut -d'-' -f2)
+          
+          echo "HELM version: $HELM_VERSION"
+          echo "APP version: $APP_VERSION"
+          echo "XINFERENCE_HELM_VERSION=${HELM_VERSION}" >> $GITHUB_ENV
           echo "XINFERENCE_APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
 
       - name: Install Helm
@@ -50,7 +57,7 @@ jobs:
         shell: bash
         run: |
           cd charts/xinference
-          helm package ./ --app-version $XINFERENCE_APP_VERSION --version "0.0.1-$XINFERENCE_APP_VERSION" --destination ../../.cr-release-packages/
+          helm package ./ --app-version $XINFERENCE_APP_VERSION --version "${XINFERENCE_HELM_VERSION}-${XINFERENCE_APP_VERSION}" --destination ../../.cr-release-packages/
           cd ../..
 
       - name: Run chart-releaser
