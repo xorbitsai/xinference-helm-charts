@@ -22,6 +22,16 @@ entries:
     - https://github.com/xorbitsai/xinference-helm-charts/releases/download/xinference-0.0.2-v0.13.3/xinference-0.0.2-v0.13.3.tgz
     version: 0.0.2-v0.13.3
   - apiVersion: v2
+    appVersion: v0.16.0
+    created: "2024-10-18T11:44:11.584865231Z"
+    description: Helm charts for Xinference on Kubernetes
+    digest: f652a52f6cbec2620ebceac34c11787b576ad91c269ddcf0708218075fb72304
+    name: xinference
+    type: application
+    urls:
+    - https://github.com/xorbitsai/xinference-helm-charts/releases/download/xinference-0.0.1-v0.16.0/xinference-0.0.1-v0.16.0.tgz
+    version: 0.0.1-v0.16.0
+  - apiVersion: v2
     appVersion: v0.15.4
     created: "2024-10-12T11:01:20.17075928Z"
     description: Helm charts for Xinference on Kubernetes
@@ -201,4 +211,4 @@ entries:
     urls:
     - https://github.com/xorbitsai/xinference-helm-charts/releases/download/xinference-0.0.1-main/xinference-0.0.1-main.tgz
     version: 0.0.1-main
-generated: "2024-10-12T11:01:20.170958953Z"
+generated: "2024-10-18T11:44:11.585081065Z"
