@@ -57,10 +57,18 @@ spec:
         app: xinference-supervisor
       {{- include "charts.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if .Values.config.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.config.imagePullSecrets | nindent 8 }}
+      {{- end }}
       containers:
       - args: {{- toYaml .Values.xinferenceSupervisor.supervisor.args | nindent 8 }}
         command:
-        - xinference-supervisor
+          {{- if .Values.xinferenceSupervisor.supervisor.command }}
+          {{- toYaml .Values.xinferenceSupervisor.supervisor.command | nindent 10 }}
+          {{- else }}
+          - "xinference-supervisor"
+          {{- end }}
         env:
         - name: POD_IP
           valueFrom:

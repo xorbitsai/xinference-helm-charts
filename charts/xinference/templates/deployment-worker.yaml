@@ -18,6 +18,10 @@ spec:
         app: xinference-worker
       {{- include "charts.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if .Values.config.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.config.imagePullSecrets | nindent 8 }}
+      {{- end }}
       initContainers:
       - name: check-supervisor
         image: {{ .Values.config.curl_image | quote }}
