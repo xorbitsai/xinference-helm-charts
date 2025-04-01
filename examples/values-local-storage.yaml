@@ -16,7 +16,6 @@ config:
   curl_image: curlimages/curl:8.8.0
   image_pull_policy: ""
   worker_num: 2
-  gpu_per_worker: "2"
   model_src: "huggingface"
   persistence:
     enabled: true
@@ -114,3 +113,8 @@ xinferenceWorker:
       requests:
         cpu: "2"
         memory: 8Gi
+        nvidia.com/gpu: "2"
+      limits:
+        cpu: "2"
+        memory: 8Gi
+        nvidia.com/gpu: "2"

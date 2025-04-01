@@ -59,12 +59,7 @@ spec:
 {{- end }}
         name: worker
         ports: {{- toYaml .Values.xinferenceWorker.worker.ports | nindent 10 }}
-        resources:
-          requests: {{- toYaml .Values.xinferenceWorker.worker.resources.requests | nindent 12 }}
-{{- if .Values.config.gpu_per_worker }}
-          limits:
-            nvidia.com/gpu: {{- include "charts.intToString" .Values.config.gpu_per_worker | quote }}
-{{- end }}
+        resources: {{- toYaml .Values.xinferenceWorker.worker.resources | nindent 10 }}
 {{- if .Values.config.persistence.enabled }}
         volumeMounts:
           - mountPath: {{ .Values.config.persistence.mountPath }}
