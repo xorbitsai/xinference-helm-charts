@@ -4,7 +4,6 @@ config:
   curl_image: curlimages/curl:8.8.0
   image_pull_policy: ""
   worker_num: 1
-  gpu_per_worker: ""
   model_src: "huggingface"
   persistence:
     enabled: false
@@ -81,6 +80,11 @@ xinferenceSupervisor:
       requests:
         cpu: "1"
         memory: 4Gi
+        nvidia.com/gpu: "1"
+      limits:
+        cpu: "1"
+        memory: 4Gi
+        nvidia.com/gpu: "1"
 xinferenceWorker:
   strategy:
     type: Recreate
@@ -102,3 +106,8 @@ xinferenceWorker:
       requests:
         cpu: "2"
         memory: 8Gi
+        nvidia.com/gpu: "1"
+      limits:
+        cpu: "2"
+        memory: 8Gi
+        nvidia.com/gpu: "1"
