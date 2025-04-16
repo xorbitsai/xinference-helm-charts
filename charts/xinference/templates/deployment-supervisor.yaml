@@ -86,7 +86,9 @@ spec:
         - name: {{ $key }}
           value: {{ $value }}
 {{- end }}
-{{- if .Values.config.xinference_image }}
+{{- if .Values.xinferenceSupervisor.supervisor.image }}
+        image: {{ .Values.xinferenceSupervisor.supervisor.image | quote }}
+{{- else if .Values.config.xinference_image }}
         image: {{ .Values.config.xinference_image | quote }}
 {{- else }}
         image: "xprobe/xinference:{{ .Chart.AppVersion }}"

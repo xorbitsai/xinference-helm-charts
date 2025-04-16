@@ -5,6 +5,10 @@
 # To achieve this effect, the main changes were made to
 # the `config.worker_num` and `xinferenceWorker.worker.resources` parameters.
 #
+# If you want to use your GPUs just for worker nodes, change the value of xinferenceSupervisor.supervisor.image
+# and specify an image with -cpu suffix, and then update the resources block to require nvidia.com/gpu: "0".
+# Or use common config.xinference_image to specify same image for supervisor and all workers.
+#
 ###############################################################################################
 
 # common used configurations
@@ -71,6 +75,7 @@ serviceWorker:
   type: ClusterIP
 xinferenceSupervisor:
   supervisor:
+    image: ""
     args:
     - --port
     - "9997"
@@ -95,6 +100,7 @@ xinferenceWorker:
   worker:
     initContainers:
       command: [ 'sh', '-c', "until curl -v http://service-supervisor:9997/v1/address; do echo waiting for supervisor; sleep 1; done" ]
+    image: ""
     args:
     - -e
     - http://service-supervisor:9997

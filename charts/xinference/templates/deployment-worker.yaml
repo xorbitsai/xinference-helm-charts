@@ -49,7 +49,9 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-{{- if .Values.config.xinference_image }}
+{{- if .Values.xinferenceWorker.worker.image }}
+        image: {{ .Values.xinferenceWorker.worker.image | quote }}
+{{- else if .Values.config.xinference_image }}
         image: {{ .Values.config.xinference_image | quote }}
 {{- else }}
         image: "xprobe/xinference:{{ .Chart.AppVersion }}"

@@ -74,6 +74,7 @@ serviceWorker:
   type: ClusterIP
 xinferenceSupervisor:
   supervisor:
+    image: ""
     args:
     - --port
     - "9997"
@@ -98,6 +99,7 @@ xinferenceWorker:
   worker:
     initContainers:
       command: [ 'sh', '-c', "until curl -v http://service-supervisor:9997/v1/address; do echo waiting for supervisor; sleep 1; done" ]
+    image: ""
     args:
     - -e
     - http://service-supervisor:9997
