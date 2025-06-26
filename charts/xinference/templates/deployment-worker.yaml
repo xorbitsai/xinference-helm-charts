@@ -61,7 +61,7 @@ spec:
 {{- end }}
         name: worker
         ports: {{- toYaml .Values.xinferenceWorker.worker.ports | nindent 10 }}
-        resources: {{- toYaml .Values.xinferenceWorker.worker.resources | nindent 10 }}
+        resources: {{ include "charts.worker.resources" . | nindent 10 }}
 {{- if .Values.config.persistence.enabled }}
         volumeMounts:
           - mountPath: {{ .Values.config.persistence.mountPath }}

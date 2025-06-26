@@ -88,3 +88,21 @@ Create the name of the service account to use
 {{- end -}}
 {{- $result -}}
 {{- end -}}
+
+
+{{- define "charts.worker.resources" -}}
+{{- if .Values.xinferenceWorker.worker.vgpu.enabled }}
+  {{- toYaml .Values.xinferenceWorker.worker.vgpu.resources }}
+{{- else }}
+  {{- toYaml .Values.xinferenceWorker.worker.resources }}
+{{- end }}
+{{- end -}}
+
+
+{{- define "charts.supervisor.resources" -}}
+{{- if .Values.xinferenceSupervisor.supervisor.vgpu.enabled }}
+  {{- toYaml .Values.xinferenceSupervisor.supervisor.vgpu.resources }}
+{{- else }}
+  {{- toYaml .Values.xinferenceSupervisor.supervisor.resources }}
+{{- end }}
+{{- end -}}
