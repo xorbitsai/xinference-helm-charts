@@ -86,6 +86,19 @@ xinferenceSupervisor:
         cpu: "1"
         memory: 4Gi
         nvidia.com/gpu: "1"
+    vgpu:
+      # enable HAMi vgpu
+      enabled: false
+      resources:
+        requests:
+          cpu: "1"
+          memory: 4Gi
+        limits:
+          cpu: "1"
+          memory: 4Gi
+          nvidia.com/gpu: "1"
+          nvidia.com/gpumem-percentage: 100
+          nvidia.com/gpucores: 100
 xinferenceWorker:
   strategy:
     type: Recreate
@@ -113,3 +126,16 @@ xinferenceWorker:
         cpu: "2"
         memory: 8Gi
         nvidia.com/gpu: "1"
+    vgpu:
+      # enable HAMi vgpu
+      enabled: false
+      resources:
+        requests:
+          cpu: "2"
+          memory: 8Gi
+        limits:
+          cpu: "2"
+          memory: 8Gi
+          nvidia.com/gpu: "1"
+          nvidia.com/gpumem-percentage: 100
+          nvidia.com/gpucores: 100
